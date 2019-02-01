@@ -24,6 +24,21 @@ export class AuthService {
     )
   }
 
+  login(credentials: {email: string, password: string}){
+    this._as.auth.signInWithEmailAndPassword(credentials.email, credentials.password)
+      .then(
+        res => {
+          this._router.navigateByUrl("/")
+          console.log(res)
+        }
+      )
+      .catch(
+        err => {
+          console.log(err)
+        }
+      )
+  }
+
 
 
 }
