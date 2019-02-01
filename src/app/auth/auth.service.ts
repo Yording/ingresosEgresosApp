@@ -49,6 +49,11 @@ export class AuthService {
       )
   }
 
+  logout(){
+    this._router.navigateByUrl('/login')
+    this._as.auth.signOut()
+  }
+
 
 
 }
