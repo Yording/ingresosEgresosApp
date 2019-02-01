@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule } from '@angular/core'; 
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 // firebase
@@ -18,6 +18,7 @@ import { DetailComponent } from './entry-exit/detail/detail.component';
 import { FooterComponent } from './shared/footer/footer.component';
 import { NavbarComponent } from './shared/navbar/navbar.component';
 import { SidebarComponent } from './shared/sidebar/sidebar.component';
+import { environment } from '../environments/environment';
 
 @NgModule({
   declarations: [
@@ -37,11 +38,13 @@ import { SidebarComponent } from './shared/sidebar/sidebar.component';
     AppRoutingModule,
     FormsModule,
     ReactiveFormsModule,
-    AngularFireModule,
     AngularFireAuthModule,
-    AngularFirestoreModule
+    AngularFirestoreModule,
+    AngularFireModule.initializeApp(environment.firebase)
   ],
-  providers: [],
+  providers: [
+
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
