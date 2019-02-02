@@ -5,13 +5,15 @@ import Swal from 'sweetalert2'
 import * as firebase from 'firebase'
 import { map } from 'rxjs/operators'
 import { Observable } from 'rxjs';
+import { User } from './user.model';
+import { AngularFirestore } from '@angular/fire/firestore';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  constructor(private _as: AngularFireAuth, private _router: Router) { }
+  constructor(private _as: AngularFireAuth, private _router: Router, private _fbStore: AngularFirestore) { }
 
   initAuthListener(){
     this._as.authState.subscribe(
@@ -24,8 +26,29 @@ export class AuthService {
   createUser(data: {name: string, email: string, password: string}){
     this._as.auth.createUserWithEmailAndPassword(data.email, data.password)
     .then(
-      res => {
-        this._router.navigateByUrl("/")
+      (res) => {
+        let user: User = {
+          uid: res.user.uid,
+          name: data.name,
+          email: data.email
+        }
+
+        this._fbStore.doc(`${user.uid}/user`)
+          .set(user)
+          .then(() => {
+            this._router.navigateByUrl("/")
+          })
+          .catch(
+            (err: Error) => {
+              console.log(err)
+              Swal.fire({
+                title: 'Error en registro',
+                text: err.message,
+                type: 'error'
+              })
+            }
+          )
+
       }
     )
     .catch(
