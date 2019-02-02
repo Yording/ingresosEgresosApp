@@ -14,7 +14,6 @@ export class LoginComponent implements OnInit {
   }
 
   signIn(credentials: {email: string, password: string}){
-    console.log(credentials)
     this._auth.login(credentials)
   }
 

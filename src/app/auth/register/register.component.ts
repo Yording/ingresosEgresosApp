@@ -16,7 +16,6 @@ export class RegisterComponent implements OnInit {
   }
 
   onSubmit(data){
-    console.log(data)
     this._auth.createUser(data)
   }
 
