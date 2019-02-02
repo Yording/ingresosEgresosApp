@@ -3,6 +3,8 @@ import { AngularFireAuth } from '@angular/fire/auth';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2'
 import * as firebase from 'firebase'
+import { map } from 'rxjs/operators'
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -61,6 +63,17 @@ export class AuthService {
     this._as.auth.signOut()
   }
 
+  isAuthenticate(): Observable<boolean>{
+    return this._as.authState.pipe(
+      map((user: firebase.User) => {
+        const isAuthenticate = user != null
+        if (!isAuthenticate) {
+          this._router.navigateByUrl("/login")
+        }
+        return isAuthenticate
+      }
+    ))
+  }
 
 
 }
