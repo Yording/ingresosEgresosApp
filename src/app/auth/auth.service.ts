@@ -7,13 +7,20 @@ import { map } from 'rxjs/operators'
 import { Observable } from 'rxjs';
 import { User } from './user.model';
 import { AngularFirestore } from '@angular/fire/firestore';
+import { Store } from '@ngrx/store';
+import { AppState } from '../app.reducer';
+import * as fromUiActions from '../shared/ui.actions'
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  constructor(private _as: AngularFireAuth, private _router: Router, private _fbStore: AngularFirestore) { }
+  constructor(
+    private _as: AngularFireAuth, 
+    private _router: Router, 
+    private _fbStore: AngularFirestore, 
+    private store: Store<AppState>) { }
 
   initAuthListener(){
     this._as.authState.subscribe(
@@ -24,6 +31,7 @@ export class AuthService {
   }
 
   createUser(data: {name: string, email: string, password: string}){
+    this.store.dispatch(new fromUiActions.ActiveLoadingAction())
     this._as.auth.createUserWithEmailAndPassword(data.email, data.password)
     .then(
       (res) => {
@@ -37,6 +45,7 @@ export class AuthService {
           .set(user)
           .then(() => {
             this._router.navigateByUrl("/")
+            this.store.dispatch(new fromUiActions.DesactiveLoadingAction())
           })
           .catch(
             (err: Error) => {
@@ -46,6 +55,7 @@ export class AuthService {
                 text: err.message,
                 type: 'error'
               })
+              this.store.dispatch(new fromUiActions.DesactiveLoadingAction())
             }
           )
 
@@ -59,15 +69,18 @@ export class AuthService {
           text: err.message,
           type: 'error'
         })
+        this.store.dispatch(new fromUiActions.DesactiveLoadingAction())
       }
     )
   }
 
   login(credentials: {email: string, password: string}){
+    this.store.dispatch(new fromUiActions.ActiveLoadingAction())
     this._as.auth.signInWithEmailAndPassword(credentials.email, credentials.password)
       .then(
         res => {
           this._router.navigateByUrl("/")
+          this.store.dispatch(new fromUiActions.ActiveLoadingAction())
         }
       )
       .catch(
@@ -77,6 +90,7 @@ export class AuthService {
             text: err.message,
             type: 'error'
           })
+          this.store.dispatch(new fromUiActions.DesactiveLoadingAction())
         }
       )
   }
