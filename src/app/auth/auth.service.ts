@@ -4,17 +4,20 @@ import { Router } from '@angular/router';
 import Swal from 'sweetalert2'
 import * as firebase from 'firebase'
 import { map } from 'rxjs/operators'
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { User } from './user.model';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Store } from '@ngrx/store';
 import { AppState } from '../app.reducer';
 import * as fromUiActions from '../shared/ui.actions'
+import * as fromAuthActions from '../auth/auth.actions'
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+
+  private _subUser: Subscription = new Subscription()
 
   constructor(
     private _as: AngularFireAuth, 
@@ -26,10 +29,15 @@ export class AuthService {
     this._as.authState.subscribe(
       (user: firebase.User) => {
         if(user){
-          this._fbStore.doc(`${user.uid}/user`).valueChanges().subscribe(
-            (userFb: User) => {
-            console.log(userFb)
+          this._subUser = this._fbStore.doc(`${user.uid}/user`).valueChanges().subscribe(
+            (userFb: any) => {
+             let newUser = new User(userFb)
+             console.log(newUser)
+             this.store.dispatch(new fromAuthActions.SetUserAction(newUser))
           })
+        }
+        else{
+          this._subUser.unsubscribe()
         }
       }
     )
@@ -85,7 +93,7 @@ export class AuthService {
       .then(
         res => {
           this._router.navigateByUrl("/")
-          this.store.dispatch(new fromUiActions.ActiveLoadingAction())
+          this.store.dispatch(new fromUiActions.DesactiveLoadingAction())
         }
       )
       .catch(
