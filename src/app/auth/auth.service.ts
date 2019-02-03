@@ -18,6 +18,7 @@ import * as fromAuthActions from '../auth/auth.actions'
 export class AuthService {
 
   private _subUser: Subscription = new Subscription()
+  private _user: User
 
   constructor(
     private _as: AngularFireAuth, 
@@ -31,12 +32,12 @@ export class AuthService {
         if(user){
           this._subUser = this._fbStore.doc(`${user.uid}/user`).valueChanges().subscribe(
             (userFb: any) => {
-             let newUser = new User(userFb)
-             console.log(newUser)
-             this.store.dispatch(new fromAuthActions.SetUserAction(newUser))
+             this._user = new User(userFb)
+             this.store.dispatch(new fromAuthActions.SetUserAction(this._user))
           })
         }
         else{
+          this._user = null
           this._subUser.unsubscribe()
         }
       }
@@ -123,6 +124,11 @@ export class AuthService {
         return isAuthenticate
       }
     ))
+  }
+
+  getUser(){
+    // para no mandar un valor por referencia sino una copia
+    return {...this._user}
   }
 
 
