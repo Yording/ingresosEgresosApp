@@ -25,7 +25,12 @@ export class AuthService {
   initAuthListener(){
     this._as.authState.subscribe(
       (user: firebase.User) => {
-        console.log(user)
+        if(user){
+          this._fbStore.doc(`${user.uid}/user`).valueChanges().subscribe(
+            (userFb: User) => {
+            console.log(userFb)
+          })
+        }
       }
     )
   }
