@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { EntryExitService } from '../entry-exit/entry-exit.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -7,9 +8,11 @@ import { Component, OnInit } from '@angular/core';
 })
 export class DashboardComponent implements OnInit {
 
-  constructor() { }
+  constructor(private _entryExitService: EntryExitService) { }
 
   ngOnInit() {
+    this._entryExitService.initEntryExitListener()
   }
+
 
 }
