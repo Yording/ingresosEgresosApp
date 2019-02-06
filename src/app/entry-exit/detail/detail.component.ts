@@ -4,6 +4,8 @@ import { AppState } from '../../app.reducer';
 import { EntryExit } from '../entry-exit.model';
 import { map, filter } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
+import { EntryExitService } from '../entry-exit.service';
+import Swal from 'sweetalert2'
 
 @Component({
   selector: 'app-detail',
@@ -15,7 +17,7 @@ export class DetailComponent implements OnInit, OnDestroy {
   public items: EntryExit[] = []
   private _subItems: Subscription = new Subscription()
 
-  constructor(private store: Store<AppState>) { }
+  constructor(private store: Store<AppState>, private _entryExitService: EntryExitService) { }
 
   ngOnInit() {
     this._subItems = this.store.select('entryExit').pipe(
@@ -24,7 +26,6 @@ export class DetailComponent implements OnInit, OnDestroy {
     ).subscribe(
       (items: EntryExit[]) => {
         this.items = items
-        console.log(items)
       }
     )
   }
@@ -34,6 +35,21 @@ export class DetailComponent implements OnInit, OnDestroy {
   }
 
   deleteItem(uid: string){
+    this._entryExitService.deleteEntryExit(uid)
+      .then(() => {
+        Swal.fire({
+          title: 'Elimando',
+          text: ` eliminado satisfactoriamente.`,
+          type: 'success'
+        })
+      })
+      .catch((err: Error) => {
+        Swal.fire({
+          title: 'Error al eliminar',
+          text: err.message,
+          type: 'error'
+        })
+      })
     console.log(uid)
   }
 

@@ -58,6 +58,11 @@ export class EntryExitService {
       .collection('items').add({...entryExit})
   }
 
+  deleteEntryExit(uid: string): Promise<any>{
+    return this._fbStore.doc(`${this._auth.getUser().uid}/entryExit/items/${uid}`)
+      .delete()
+  }
+
   removeSubs(){
     this._subListener.unsubscribe()
     this._subListenerItems.unsubscribe()
