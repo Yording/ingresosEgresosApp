@@ -50,7 +50,6 @@ export class DetailComponent implements OnInit, OnDestroy {
           type: 'error'
         })
       })
-    console.log(uid)
   }
 
 }
