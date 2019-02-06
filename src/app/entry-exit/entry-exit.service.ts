@@ -6,11 +6,16 @@ import { AppState } from '../app.reducer';
 import { Store } from '@ngrx/store';
 import { filter, map } from 'rxjs/operators';
 import { User } from '../auth/user.model';
+import * as fromEntryExitActions from './entry-exit.actions'
+import { Subscription } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class EntryExitService {
+
+  private _subListener: Subscription = new Subscription()
+  private _subListenerItems: Subscription = new Subscription()
 
   constructor(
     private _fbStore: AngularFirestore, 
@@ -19,7 +24,7 @@ export class EntryExitService {
   ) { }
 
   initEntryExitListener(){
-    this.store.select('auth').pipe(
+    this._subListener =  this.store.select('auth').pipe(
       filter(auth => auth.user != null),
       map(auth => auth.user)
     )
@@ -30,16 +35,32 @@ export class EntryExitService {
   }
 
   private entryExitItems(uid: string){
-    this._fbStore.collection(`${uid}/entryExit/items`)
-      .valueChanges()
-      .subscribe(itemsData => {
-        console.log(itemsData)
+    this._subListenerItems = this._fbStore.collection(`${uid}/entryExit/items`)
+      .snapshotChanges()
+      .pipe(
+        map(data => {
+          return data.map(
+            doc => {
+              return {
+                uid: doc.payload.doc.id,
+                ...doc.payload.doc.data()
+              }
+          })
+        })
+      )
+      .subscribe((itemsData: any[]) => {
+        this.store.dispatch(new fromEntryExitActions.SetItemsAction(itemsData))
       })
   }
 
   createEntryExit(entryExit: EntryExit): Promise<any>{
     return this._fbStore.doc(`${this._auth.getUser().uid}/entryExit`)
       .collection('items').add({...entryExit})
+  }
+
+  removeSubs(){
+    this._subListener.unsubscribe()
+    this._subListenerItems.unsubscribe()
   }
 
 
