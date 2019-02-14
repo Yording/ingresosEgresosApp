@@ -16,6 +16,9 @@ export class StatictsComponent implements OnInit {
   public amountEntries: number = 0
   public amountExits: number = 0
   private _sub: Subscription = new Subscription()
+  public pieChartLabels:string[] = ['Ingresos', 'Egresos'];
+  public pieChartData:number[] = [];
+  public pieChartType:string = 'pie';
 
   constructor(private store: Store<AppState>) { }
 
@@ -41,6 +44,7 @@ export class StatictsComponent implements OnInit {
         this.exits = this.exits + item.amount
       }
     })
+    this.pieChartData = [this.entries, this.exits]
   }
 
 }

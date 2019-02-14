@@ -23,6 +23,7 @@ import { StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from "@ngrx/store-devtools";
 import { appReducers } from './app.reducer';
 import { OrderEntryExitPipe } from './entry-exit/order-entry-exit.pipe';
+import { ChartsModule } from 'ng2-charts'
 
 @NgModule({
   declarations: [
@@ -50,7 +51,8 @@ import { OrderEntryExitPipe } from './entry-exit/order-entry-exit.pipe';
     StoreDevtoolsModule.instrument({
       maxAge: 5,
       logOnly: environment.production
-    })
+    }),
+    ChartsModule
   ],
   providers: [
 
